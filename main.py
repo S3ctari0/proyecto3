@@ -1,33 +1,34 @@
-from employee import Employee
-from employee_management import EmployeeManagementSystem
-from human_resource import HumanResourceModule
-from payroll import PayrollSystem
+import schedule
+import time
 from email_notification import EmailNotification
+from employee_management import EmployeeManagementSystem
 
-def main():
-    # Configurar el remitente de correo electrónico
-    sender_email = 'becerrajosemiguel639@gmail.com'
-    sender_password = 'Josemiguel1602.'
-
+def enviar_informacion_clientes():
     # Crear instancia del sistema de gestión de empleados
     employee_management_system = EmployeeManagementSystem()
 
-    # Crear instancia del módulo de recursos humanos
-    hr_module = HumanResourceModule(employee_management_system)
+    # Obtener la lista de empleados
+    employees = employee_management_system.list_employees()
 
-    # Crear instancia del sistema de nóminas
-    payroll_system = PayrollSystem(employee_management_system)
+    # Configurar el remitente de correo electrónico
+    sender_email = 'becerrajosemiguel639@gmail.com'
+    sender_password = 'kdes pbho iidj ycvj'
 
     # Crear instancia del sistema de notificación por correo electrónico
     email_notification = EmailNotification(sender_email, sender_password)
 
-    # Lógica de la aplicación
-    # Por ejemplo:
-    recipient_email = 'josemiguel643152@gmail.com'
-    subject = 'Prueba'
-    message = 'Este es un mensaje prueba'
+    # Iterar sobre la lista de empleados y enviar la información a cada uno
+    for employee in employees:
+        recipient_email = employee.email
+        subject = 'Información del cliente'
+        message = f'Hola {employee.name}, aquí está tu información: {employee}'
+        email_notification.send_email_notification(recipient_email, subject, message)
+        print(f"Correo electrónico enviado a {recipient_email}")
 
-    email_notification.send_email_notification(recipient_email, subject, message)
+# Programar el envío del correo electrónico todos los días a las 6pm hora colombiana
+schedule.every().day.at("18:00").do(enviar_informacion_clientes)
 
-if __name__ == "__main__":
-    main()
+# Mantener el script en ejecución para que schedule pueda ejecutar las tareas programadas
+while True:
+    schedule.run_pending()
+    time.sleep(1)
